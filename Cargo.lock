@@ -653,7 +653,7 @@ checksum = "32b752e52a2da0ddfbdbcc6fceadfeede4c939ed16d13e648833a61dfb611ed8"
 
 [[package]]
 name = "ynab-converter"
-version = "4.0.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "chrono",
