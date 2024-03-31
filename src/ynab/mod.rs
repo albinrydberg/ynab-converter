@@ -1,10 +1,12 @@
+pub use convertible::Convertible;
 pub use csv::write_csv;
 pub use transaction::Transaction;
-pub use convertible::Convertible;
 
+use crate::nordea;
+
+mod convertible;
 mod csv;
 mod transaction;
-mod convertible;
 
 pub trait Parser {
     fn read_from_file(&self, file_path: String) -> anyhow::Result<Vec<impl Convertible>>;
@@ -24,3 +26,9 @@ pub trait Parser {
     }
 }
 
+impl Parser for nordea::Parser {
+    fn read_from_file(&self, file_path: String) -> anyhow::Result<Vec<impl Convertible>> {
+        // Wraps nordea specific implementation
+        self.read_csv(file_path)
+    }
+}

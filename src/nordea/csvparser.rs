@@ -1,29 +1,24 @@
 use crate::nordea::Transaction;
-use crate::ynab;
 
-pub struct NordeaParser;
+pub struct Parser;
 
-impl ynab::Parser for NordeaParser {
-    fn read_from_file(&self, file_path: String) -> anyhow::Result<Vec<impl ynab::Convertible>> {
-        read_csv(file_path)
-    }
+pub fn new_parser() -> Parser {
+    Parser {}
 }
 
-pub fn new_parser() -> NordeaParser {
-    NordeaParser {}
-}
+impl Parser {
+    pub fn read_csv(&self, file_name: String) -> anyhow::Result<Vec<Transaction>> {
+        let mut reader = csv::ReaderBuilder::new()
+            .delimiter(b';')
+            .from_path(file_name)?;
 
-fn read_csv(file_name: String) -> anyhow::Result<Vec<Transaction>> {
-    let mut reader = csv::ReaderBuilder::new()
-        .delimiter(b';')
-        .from_path(file_name)?;
-
-    let mut result = Vec::new();
-    for record in reader.deserialize() {
-        let row: Transaction = record?;
-        result.push(row)
+        let mut result = Vec::new();
+        for record in reader.deserialize() {
+            let row: Transaction = record?;
+            result.push(row)
+        }
+        Ok(result)
     }
-    Ok(result)
 }
 
 #[cfg(test)]
@@ -34,8 +29,11 @@ mod tests {
 
     #[test]
     fn read_csv() {
+        // Given
+        let parser = csvparser::new_parser();
+
         // When
-        let result = csvparser::read_csv(String::from("testfiles/nordea-test-input.csv"));
+        let result = parser.read_csv(String::from("testfiles/nordea-test-input.csv"));
 
         // Then
         assert!(result.is_ok(), "Error was {:?}", result);
