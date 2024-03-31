@@ -1,4 +1,4 @@
-use crate::{handelsbanken, nordea, util};
+use crate::{handelsbanken, nordea};
 use crate::ynab::Transaction;
 
 pub trait Convertible {
@@ -7,7 +7,7 @@ pub trait Convertible {
 
 impl Convertible for handelsbanken::Transaction {
     fn to_ynab(self) -> Transaction {
-        let flow = util::convert_amount_to_flow(self.amount);
+        let flow = convert_amount_to_flow(self.amount);
         Transaction {
             date: self.ledger_date,
             memo: self.text,
@@ -20,7 +20,7 @@ impl Convertible for handelsbanken::Transaction {
 
 impl Convertible for nordea::Transaction {
     fn to_ynab(self) -> Transaction {
-        let flow = util::convert_amount_to_flow(self.amount);
+        let flow = convert_amount_to_flow(self.amount);
         Transaction {
             date: self.timestamp,
             memo: self.title,
@@ -30,6 +30,28 @@ impl Convertible for nordea::Transaction {
         }
     }
 }
+
+
+#[derive(Default)]
+struct Flow {
+    pub inflow: f32,
+    pub outflow: f32,
+}
+
+fn convert_amount_to_flow(amount: f32) -> Flow {
+    if amount < 0.0 {
+        Flow {
+            outflow: amount.abs(),
+            ..Flow::default()
+        }
+    } else {
+        Flow {
+            inflow: amount,
+            ..Flow::default()
+        }
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
