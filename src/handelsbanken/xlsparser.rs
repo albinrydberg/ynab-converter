@@ -48,7 +48,7 @@ fn read_dom_from_file(input_file: String) -> anyhow::Result<Dom> {
 }
 
 /// Traverses a HTML node until a \<TR> element is found, which then will be parsed
-/// 
+///
 /// TODO: Figure out how to do this without collecting on each call
 fn traverse_parse(nodes: Vec<Node>) -> Vec<RawTableRow> {
     nodes //
@@ -94,13 +94,12 @@ fn parse_cell(element: Element) -> Option<String> {
         )
     }
 
-    let cell_node = element.children[0].clone();
+    let cell_node = &element.children[0];
 
     match cell_node {
         Node::Text(text) if text.contains(HTML_NON_BREAKING_SPACE) => None,
-        Node::Text(text) => Some(text),
-        Node::Element(x) => panic!("Found unexpected element: {:?}", x),
-        Node::Comment(x) => panic!("Found unexpected comment: {:?}", x),
+        Node::Text(text) => Some(text.clone()),
+        n => panic!("Found unexpected node: {:?}", n),
     }
 }
 
