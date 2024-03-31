@@ -48,6 +48,8 @@ fn read_dom_from_file(input_file: String) -> anyhow::Result<Dom> {
 }
 
 /// Traverses a HTML node until a \<TR> element is found, which then will be parsed
+/// 
+/// TODO: Figure out how to do this without collecting on each call
 fn traverse_parse(nodes: Vec<Node>) -> Vec<RawTableRow> {
     nodes //
         .into_iter()
