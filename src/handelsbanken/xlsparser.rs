@@ -5,8 +5,6 @@ use html_parser::{Dom, Element, Node};
 use crate::{handelsbanken, ynab};
 use crate::handelsbanken::table::*;
 
-use crate::{handelsbanken, ynab};
-
 const HANDELSBANKEN_SHITTY_STRING: &str = " PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"";
 
 const HTML_TABLE_ROW_TAG: &str = "tr";

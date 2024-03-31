@@ -30,12 +30,12 @@ fn read_csv(file_name: String) -> anyhow::Result<Vec<Transaction>> {
 mod tests {
     use chrono::NaiveDate;
 
-    use crate::nordea;
+    use crate::nordea::csvparser;
 
     #[test]
     fn read_csv() {
         // When
-        let result = nordea::read_csv(String::from("testfiles/nordea-test-input.csv"));
+        let result = csvparser::read_csv(String::from("testfiles/nordea-test-input.csv"));
 
         // Then
         assert!(result.is_ok(), "Error was {:?}", result);

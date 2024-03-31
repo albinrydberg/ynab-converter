@@ -4,7 +4,7 @@ use chrono::NaiveDate;
 pub struct Transaction {
     #[serde(rename = "Bokföringsdag")]
     pub timestamp: NaiveDate,
-    #[serde(rename = "Belopp", with = "float_with_comma")]
+    #[serde(rename = "Belopp", with = "swedish_float")]
     pub amount: f32,
     #[serde(rename = "Avsändare")]
     pub sender: String,
@@ -14,13 +14,13 @@ pub struct Transaction {
     pub name: String,
     #[serde(rename = "Rubrik")]
     pub title: String,
-    #[serde(rename = "Saldo", with = "float_with_comma")]
+    #[serde(rename = "Saldo", with = "swedish_float")]
     pub saldo: f32,
     #[serde(rename = "Valuta")]
     pub currency: String,
 }
 
-mod float_with_comma {
+mod swedish_float {
     use serde::{Deserialize, Deserializer};
     use serde::de::Error;
 
