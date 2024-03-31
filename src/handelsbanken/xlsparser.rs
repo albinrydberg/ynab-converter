@@ -35,7 +35,7 @@ impl Parser {
 /// we assume that all rows of the expected length pertain to the same table
 fn remove_residual_table_data(rows: Vec<RawTableRow>) -> Vec<RawTableRow> {
     rows.into_iter()
-        .filter(|row| row.len() == KNOWN_HANDELSBANKEN_HEADERS.len())
+        .filter(|row| row.is_handelsbanken_length())
         .collect::<Vec<RawTableRow>>()
 }
 

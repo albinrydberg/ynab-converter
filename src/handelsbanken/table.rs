@@ -2,8 +2,7 @@ use chrono::NaiveDate;
 
 use crate::{handelsbanken, util};
 
-// TODO: This shouldn't be used in two different modules
-pub(super) const KNOWN_HANDELSBANKEN_HEADERS: [&str; 5] = [
+const KNOWN_HANDELSBANKEN_HEADERS: [&str; 5] = [
     "Reskontradatum",
     "Transaktionsdatum",
     "Text",
@@ -67,12 +66,14 @@ pub(super) struct RawTableRow {
     cells: Vec<String>,
 }
 
+impl RawTableRow {}
+
 impl RawTableRow {
     pub(super) fn new(cells: Vec<String>) -> Self {
         Self { cells }
     }
 
-    pub(super) fn len(&self) -> usize {
-        self.cells.len()
+    pub(super) fn is_handelsbanken_length(&self) -> bool {
+        self.cells.len() == KNOWN_HANDELSBANKEN_HEADERS.len()
     }
 }
