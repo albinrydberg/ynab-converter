@@ -1,34 +1,8 @@
-use chrono::NaiveDate;
 use csv::Writer;
 
-/// The format of a YNAB CSV row
-#[derive(serde::Serialize, Default)]
-pub struct Row {
-    #[serde(with = "ynab_date_format")]
-    pub date: NaiveDate,
-    pub payee: String,
-    pub category: String,
-    pub memo: String,
-    pub outflow: f32,
-    pub inflow: f32,
-}
+use super::transaction::Transaction;
 
-mod ynab_date_format {
-    use chrono::NaiveDate;
-    use serde::Serializer;
-
-    const FORMAT: &str = "%Y/%m/%d";
-
-    pub fn serialize<S>(date: &NaiveDate, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let s = format!("{}", date.format(FORMAT));
-        serializer.serialize_str(&s)
-    }
-}
-
-pub fn write_csv(file_name: String, records: Vec<Row>) -> anyhow::Result<()> {
+pub fn write_csv(file_name: String, records: Vec<Transaction>) -> anyhow::Result<()> {
     let mut writer = Writer::from_path(file_name)?;
     for record in records {
         writer.serialize(record)?
@@ -43,13 +17,12 @@ mod tests {
     use chrono::NaiveDate;
 
     use crate::ynab;
-
-    use super::Row;
+    use crate::ynab::Transaction;
 
     #[test]
     fn write_csv() {
         // Given
-        let row = Row {
+        let row = Transaction {
             date: NaiveDate::from_ymd_opt(2024, 3, 28).unwrap(),
             payee: String::from("payee"),
             category: String::from("category"),
@@ -57,7 +30,7 @@ mod tests {
             outflow: 100.0,
             inflow: 200.0,
         };
-        let row2 = Row {
+        let row2 = Transaction {
             date: NaiveDate::from_ymd_opt(2024, 3, 28).unwrap(),
             payee: String::from("payee2"),
             category: String::from("category2"),

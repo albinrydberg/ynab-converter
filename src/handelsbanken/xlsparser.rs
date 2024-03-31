@@ -2,8 +2,10 @@ use std::fs;
 
 use html_parser::{Dom, Element, Node};
 
-use crate::handelsbanken;
+use crate::{handelsbanken, ynab};
 use crate::handelsbanken::table::*;
+
+use crate::{handelsbanken, ynab};
 
 const HANDELSBANKEN_SHITTY_STRING: &str = " PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"";
 
@@ -12,8 +14,20 @@ const HTML_DATA_CELL_TAG: &str = "td";
 
 const HTML_NON_BREAKING_SPACE: &str = "&nbsp";
 
+pub struct HandelsbankenParser;
+
+pub fn new_parser() -> HandelsbankenParser {
+    HandelsbankenParser {}
+}
+
+impl ynab::Parser for HandelsbankenParser {
+    fn read_from_file(&self, file_path: String) -> anyhow::Result<Vec<impl ynab::Convertible>> {
+        read_xls(file_path)
+    }
+}
+
 /// Parses a questionable handelsbanken XLS.
-pub(super) fn read_xls(input_file: String) -> anyhow::Result<Vec<handelsbanken::Row>> {
+fn read_xls(input_file: String) -> anyhow::Result<Vec<handelsbanken::Transaction>> {
     let dom = read_dom_from_file(input_file)?;
     let rows = traverse_parse(dom.children);
     let rows = remove_residual_table_data(rows);
@@ -98,7 +112,7 @@ fn parse_cell(element: Element) -> Option<String> {
 mod tests {
     use chrono::NaiveDate;
 
-    use crate::handelsbanken::Row;
+    use crate::handelsbanken::Transaction;
     use crate::handelsbanken::xlsparser;
 
     #[test]
@@ -109,14 +123,14 @@ mod tests {
 
         let rows = result.unwrap();
         let expected = vec![
-            Row {
+            Transaction {
                 ledger_date: NaiveDate::from_ymd_opt(2024, 3, 28).unwrap(),
                 transaction_date: NaiveDate::from_ymd_opt(2024, 3, 28).unwrap(),
                 text: "HSB Göteborg".to_string(),
                 amount: -5552.0,
                 balance: Some(54057.92),
             },
-            Row {
+            Transaction {
                 ledger_date: NaiveDate::from_ymd_opt(2024, 3, 28).unwrap(),
                 transaction_date: NaiveDate::from_ymd_opt(2024, 3, 28).unwrap(),
                 text: "HSB Göteborg".to_string(),

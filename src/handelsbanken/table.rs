@@ -34,14 +34,14 @@ impl Table {
         Self { rows }
     }
 
-    pub(super) fn to_rows(&self) -> Vec<handelsbanken::Row> {
+    pub(super) fn to_rows(&self) -> Vec<handelsbanken::Transaction> {
         let _header_row = &self.rows[0]; // TODO: Decide whether to do something with this
         let data_rows = &self.rows[1..];
 
         data_rows.iter().map(Self::convert_row).collect()
     }
 
-    fn convert_row(row: &RawTableRow) -> handelsbanken::Row {
+    fn convert_row(row: &RawTableRow) -> handelsbanken::Transaction {
         let ledger_date = NaiveDate::parse_from_str(&row.cells[0], DATE_FMT).unwrap();
         let transaction_date = NaiveDate::parse_from_str(&row.cells[1], DATE_FMT).unwrap();
         let text = row.cells[2].clone();
@@ -51,7 +51,7 @@ impl Table {
             Err(_) => None,
         };
 
-        handelsbanken::Row {
+        handelsbanken::Transaction {
             ledger_date,
             transaction_date,
             text,
