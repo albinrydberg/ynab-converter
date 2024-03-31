@@ -12,27 +12,23 @@ const HTML_DATA_CELL_TAG: &str = "td";
 
 const HTML_NON_BREAKING_SPACE: &str = "&nbsp";
 
-pub struct HandelsbankenParser;
+pub struct Parser;
 
-pub fn new_parser() -> HandelsbankenParser {
-    HandelsbankenParser {}
+pub fn new_parser() -> Parser {
+    Parser {}
 }
 
-impl ynab::Parser for HandelsbankenParser {
-    fn read_from_file(&self, file_path: String) -> anyhow::Result<Vec<impl ynab::Convertible>> {
-        read_xls(file_path)
+impl Parser {
+    /// Parses a questionable handelsbanken XLS.
+    pub fn read_xls(&self, input_file: String) -> anyhow::Result<Vec<handelsbanken::Transaction>> {
+        let dom = read_dom_from_file(input_file)?;
+        let rows = traverse_parse(dom.children);
+        let rows = remove_residual_table_data(rows);
+
+        let table = Table::from(rows);
+        let output_vec = table.to_rows();
+        Ok(output_vec)
     }
-}
-
-/// Parses a questionable handelsbanken XLS.
-fn read_xls(input_file: String) -> anyhow::Result<Vec<handelsbanken::Transaction>> {
-    let dom = read_dom_from_file(input_file)?;
-    let rows = traverse_parse(dom.children);
-    let rows = remove_residual_table_data(rows);
-
-    let table = Table::from(rows);
-    let output_vec = table.to_rows();
-    Ok(output_vec)
 }
 
 /// Since we are unable to parse \<table> elements separately, (because of shitty input data)

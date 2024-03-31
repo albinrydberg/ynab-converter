@@ -1,6 +1,7 @@
 use chrono::NaiveDate;
 
 pub use xlsparser::new_parser;
+pub use xlsparser::Parser;
 
 mod table;
 mod xlsparser;
