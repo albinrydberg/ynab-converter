@@ -7,4 +7,5 @@ mod convertible;
 mod csv;
 mod transaction;
 mod parser;
+mod client;
 
