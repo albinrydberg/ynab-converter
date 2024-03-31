@@ -2,7 +2,7 @@ use std::fs;
 
 use html_parser::{Dom, Element, Node};
 
-use crate::{handelsbanken, ynab};
+use crate::handelsbanken;
 use crate::handelsbanken::table::*;
 
 const HANDELSBANKEN_SHITTY_STRING: &str = " PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"";
@@ -14,11 +14,11 @@ const HTML_NON_BREAKING_SPACE: &str = "&nbsp";
 
 pub struct Parser;
 
-pub fn new_parser() -> Parser {
-    Parser {}
-}
-
 impl Parser {
+    pub fn new() -> Self {
+        Self {}
+    }
+
     /// Parses a questionable handelsbanken XLS.
     pub fn read_xls(&self, input_file: String) -> anyhow::Result<Vec<handelsbanken::Transaction>> {
         let dom = read_dom_from_file(input_file)?;
@@ -111,8 +111,14 @@ mod tests {
 
     #[test]
     fn read_xls_happy() {
-        let result = xlsparser::read_xls("testfiles/handelsbanken-input.xls".to_string());
+        // Given
+        let parser = xlsparser::Parser::new();
+
+        // When
+        let result = parser.read_xls("testfiles/handelsbanken-input.xls".to_string());
         println!("Result: {:?}", result);
+
+        // Then
         assert!(result.is_ok(), "unexpected error: {:?}", result);
 
         let rows = result.unwrap();

@@ -32,8 +32,8 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.bank {
-        Bank::Nordea(arguments) => convert_csv(nordea::new_parser(), arguments),
-        Bank::Handelsbanken(arguments) => convert_csv(handelsbanken::new_parser(), arguments),
+        Bank::Nordea(arguments) => convert_csv(nordea::Parser::new(), arguments),
+        Bank::Handelsbanken(arguments) => convert_csv(handelsbanken::Parser::new(), arguments),
     }
 }
 

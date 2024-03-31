@@ -2,11 +2,11 @@ use crate::nordea::Transaction;
 
 pub struct Parser;
 
-pub fn new_parser() -> Parser {
-    Parser {}
-}
-
 impl Parser {
+    pub fn new() -> Self {
+        Self{}
+    }
+    
     pub fn read_csv(&self, file_name: String) -> anyhow::Result<Vec<Transaction>> {
         let mut reader = csv::ReaderBuilder::new()
             .delimiter(b';')
@@ -30,7 +30,7 @@ mod tests {
     #[test]
     fn read_csv() {
         // Given
-        let parser = csvparser::new_parser();
+        let parser = csvparser::Parser::new();
 
         // When
         let result = parser.read_csv(String::from("testfiles/nordea-test-input.csv"));
