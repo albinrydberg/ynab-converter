@@ -26,7 +26,7 @@ impl Parser {
         let rows = remove_residual_table_data(rows);
 
         let table = Table::from(rows);
-        let output_vec = table.to_rows();
+        let output_vec = table.convert_to_rows();
         Ok(output_vec)
     }
 }

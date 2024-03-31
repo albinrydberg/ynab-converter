@@ -34,7 +34,7 @@ impl Table {
         Self { rows }
     }
 
-    pub(super) fn to_rows(self) -> Vec<handelsbanken::Transaction> {
+    pub(super) fn convert_to_rows(self) -> Vec<handelsbanken::Transaction> {
         let _header_row = &self.rows[0]; // TODO: Decide whether to do something with this
         let data_rows = &self.rows[1..];
 
