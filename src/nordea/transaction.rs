@@ -2,7 +2,7 @@ use chrono::NaiveDate;
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
 pub struct Transaction {
-    #[serde(rename = "Bokföringsdag", with = "nordea_date")]
+    #[serde(rename = "Bokföringsdag", with = "nordea_ledger_date")]
     pub timestamp: NaiveDate,
     #[serde(rename = "Belopp", with = "swedish_float")]
     pub amount: f32,
@@ -35,7 +35,7 @@ mod swedish_float {
     }
 }
 
-mod nordea_date {
+mod nordea_ledger_date {
     use chrono::NaiveDate;
     use serde::{Deserialize, Deserializer};
     use serde::de::Error;
@@ -54,7 +54,14 @@ mod nordea_date {
             return Err(Error::custom("Ledger date was 'reserved'"));
         }
         
-        NaiveDate::parse_from_str(&date_string, DATE_FMT)
-            .or_else(|_| NaiveDate::parse_from_str(&date_string, DATE_FMT_2).map_err(Error::custom))
+        if let Ok(date) = NaiveDate::parse_from_str(&date_string, DATE_FMT) {
+            return Ok(date)
+        }
+        
+        if let Ok(date) = NaiveDate::parse_from_str(&date_string, DATE_FMT_2) {
+            return Ok(date)
+        }
+        
+        Err(Error::custom("Failed to deserialize ledger_date"))
     }
 }
