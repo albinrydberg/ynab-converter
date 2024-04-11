@@ -1,4 +1,4 @@
-use clap::{arg, Parser, ValueEnum};
+use clap::{arg, Args, Parser, Subcommand, ValueEnum};
 
 mod handelsbanken;
 mod nordea;
@@ -8,13 +8,27 @@ mod ynab;
 #[derive(Parser)]
 #[command(version, about, long_about = None, arg_required_else_help = true)]
 struct Cli {
-    input_file: String,
+    input_file: Option<String>,
 
     #[arg(short, long, default_value_t = String::from("output.csv"))]
     output_file: String,
 
     #[arg(value_enum, short, long, help = "Force read input as a specific bank")]
     force: Option<Bank>,
+
+    #[command(subcommand)]
+    api: Option<YnabApi>,
+}
+
+#[derive(Subcommand)]
+enum YnabApi {
+    Budgets(YnabApiArguments),
+}
+
+#[derive(Args)]
+struct YnabApiArguments {
+    #[arg(short, long)]
+    pat: String,
 }
 
 #[derive(ValueEnum, Clone)]
@@ -26,17 +40,26 @@ enum Bank {
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
-    match cli.input_file {
-        input_file if is_nordea(&input_file) => {
-            convert_csv(nordea::Parser::new(), input_file, cli.output_file)
+    match cli.api {
+        Some(YnabApi::Budgets(args)) => {
+            let client = ynab::Client::new(args.pat)?;
+            let response = client.get_budgets()?;
+            println!("{:?}", response);
+            Ok(())
         }
-        input_file if is_handelsbanken(&input_file) => {
-            convert_csv(handelsbanken::Parser::new(), input_file, cli.output_file)
-        }
-        unrecognized => Err(anyhow::Error::msg(format!(
-            "Unrecognized file: {:?}",
-            unrecognized
-        ))),
+        None => match cli.input_file {
+            Some(input_file) if is_nordea(&input_file) => {
+                convert_csv(nordea::Parser::new(), input_file, cli.output_file)
+            }
+            Some(input_file) if is_handelsbanken(&input_file) => {
+                convert_csv(handelsbanken::Parser::new(), input_file, cli.output_file)
+            }
+            Some(unrecognized) => Err(anyhow::Error::msg(format!(
+                "Unrecognized file: {:?}",
+                unrecognized
+            ))),
+            None => Err(anyhow::Error::msg("No file passed")),
+        },
     }
 }
 
