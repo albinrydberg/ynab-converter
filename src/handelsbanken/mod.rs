@@ -1,9 +1,11 @@
 use chrono::NaiveDate;
 
-pub use xlsparser::Parser;
+pub use parserpicker::Parser;
 
 mod table;
 mod xlsparser;
+mod xlsxparser;
+mod parserpicker;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Transaction {
