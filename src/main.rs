@@ -41,7 +41,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn is_handelsbanken(input_file: &str) -> bool {
-    input_file.ends_with(".xls")
+    input_file.ends_with(".xls") || input_file.ends_with(".xlsx")
 }
 
 fn is_nordea(input_file: &str) -> bool {

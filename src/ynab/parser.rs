@@ -27,6 +27,6 @@ impl Parser for nordea::Parser {
 
 impl Parser for handelsbanken::Parser {
     fn read_from_file(&self, file_path: String) -> anyhow::Result<Vec<impl Convertible>> {
-        self.read_xls(file_path)
+        self.read(file_path)
     }
 }
