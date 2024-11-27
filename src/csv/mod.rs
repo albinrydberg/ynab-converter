@@ -15,7 +15,7 @@ impl Parser {
             .from_path(file_name);
 
         if let Ok(mut reader) = result {
-            if let Some(_) = reader.deserialize::<T>().next() {
+            if let Some(Ok(_)) = reader.deserialize::<T>().next() {
                 return true;
             }
         }

@@ -115,4 +115,34 @@ mod tests {
 
         assert!(csv_vec.is_empty());
     }
+
+    #[test]
+    fn is_parsable() {
+        // Given
+        let parser = Parser::new();
+
+        // When
+        let result = parser.is_parsable(
+            //
+            &String::from("testfiles/nordea-input-2024.csv"),
+        );
+
+        // Then
+        assert_eq!(true, result);
+    }
+
+    #[test]
+    fn is_parsable_negative() {
+        // Given
+        let parser = Parser::new();
+
+        // When
+        let result = parser.is_parsable(
+            //
+            &String::from("testfiles/amex-test-input.csv"),
+        );
+
+        // Then
+        assert_eq!(false, result);
+    }
 }
