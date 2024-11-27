@@ -1,5 +1,8 @@
+use crate::ynab::YnabWriter;
 use clap::{arg, Parser, ValueEnum};
 
+mod amex;
+mod csv;
 mod handelsbanken;
 mod nordea;
 mod util;
@@ -21,17 +24,17 @@ struct Cli {
 enum Bank {
     Nordea,
     Handelsbanken,
+    Amex,
 }
 
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
+    let ynab_writer = YnabWriter::new();
 
     match cli.input_file {
-        input_file if is_nordea(&input_file) => {
-            convert_csv(nordea::Parser::new(), input_file, cli.output_file)
-        }
-        input_file if is_handelsbanken(&input_file) => {
-            convert_csv(handelsbanken::Parser::new(), input_file, cli.output_file)
+        input_file if is_csv(&input_file) => convert_csv(ynab_writer, input_file, cli.output_file),
+        input_file if is_excel(&input_file) => {
+            convert_excel(ynab_writer, input_file, cli.output_file)
         }
         unrecognized => Err(anyhow::Error::msg(format!(
             "Unrecognized file: {:?}",
@@ -40,21 +43,42 @@ fn main() -> anyhow::Result<()> {
     }
 }
 
-fn is_handelsbanken(input_file: &str) -> bool {
+fn is_excel(input_file: &str) -> bool {
     input_file.ends_with(".xls") || input_file.ends_with(".xlsx")
 }
 
-fn is_nordea(input_file: &str) -> bool {
+fn is_csv(input_file: &str) -> bool {
     input_file.ends_with(".csv")
 }
 
-fn convert_csv(
-    parser: impl ynab::Parser,
+fn convert_excel(
+    ynab_writer: YnabWriter,
     input_file: String,
     output_file: String,
 ) -> anyhow::Result<()> {
-    let ynab_rows = parser.parse(input_file)?;
-    ynab::write_csv(output_file, ynab_rows)
+    let parser = handelsbanken::Parser::new();
+    let ynab_rows = parser.read(input_file)?;
+    ynab_writer.write_csv(output_file, ynab_rows)
+}
+
+fn convert_csv(
+    ynab_writer: YnabWriter,
+    input_file: String,
+    output_file: String,
+) -> anyhow::Result<()> {
+    let nordea_parser = nordea::Parser::new();
+    if nordea_parser.is_parsable(&input_file) {
+        let nordea_rows = nordea_parser.parse(&input_file)?;
+        ynab_writer.write_csv(output_file.clone(), nordea_rows)?
+    }
+
+    let amex_parser = amex::Parser::new();
+    if amex_parser.is_parsable(&input_file) {
+        let amex_rows = amex_parser.parse(&input_file)?;
+        ynab_writer.write_csv(output_file.clone(), amex_rows)?
+    }
+
+    Ok(())
 }
 
 #[test]

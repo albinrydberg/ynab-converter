@@ -1,6 +1,7 @@
 use chrono::NaiveDate;
 
-use crate::{handelsbanken, util};
+use crate::handelsbanken;
+use crate::util::swedish_float;
 
 const KNOWN_HANDELSBANKEN_HEADERS: [&str; 5] = [
     "Reskontradatum",
@@ -45,8 +46,8 @@ impl Table {
         let ledger_date = NaiveDate::parse_from_str(&row.cells[0], DATE_FMT).unwrap();
         let transaction_date = NaiveDate::parse_from_str(&row.cells[1], DATE_FMT).unwrap();
         let text = row.cells[2].clone();
-        let amount = util::parse_swedish_float(row.cells[3].to_string()).unwrap();
-        let balance = match util::parse_swedish_float(row.cells[4].to_string()) {
+        let amount = swedish_float::parse_swedish_float(row.cells[3].to_string()).unwrap();
+        let balance = match swedish_float::parse_swedish_float(row.cells[4].to_string()) {
             Ok(balance) => Some(balance),
             Err(_) => None,
         };
