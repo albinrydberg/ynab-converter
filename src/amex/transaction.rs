@@ -8,10 +8,6 @@ pub struct Transaction {
     pub date: NaiveDate,
     #[serde(rename = "Beskrivning")]
     pub description: String,
-    #[serde(rename = "Kortmedlem")]
-    pub card_holder: String,
-    #[serde(rename = "Konto #")]
-    pub card_number: String,
     #[serde(rename = "Belopp", with = "util::swedish_float")]
     pub amount: f32,
 }
@@ -68,9 +64,7 @@ mod tests {
         let amex = amex::Transaction {
             date: NaiveDate::from_ymd_opt(2024, 3, 28).unwrap(),
             description: "Description".to_string(),
-            card_holder: "Name".to_string(),
             amount: 5552.0,
-            card_number: "12345".to_string(),
         };
 
         // When
