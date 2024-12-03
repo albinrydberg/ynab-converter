@@ -1,5 +1,6 @@
 use crate::handelsbanken;
 use crate::handelsbanken::{xlsparser, xlsxparser};
+use log::info;
 
 pub struct Parser;
 
@@ -14,7 +15,10 @@ impl Parser {
         match output {
             Ok(x) => Ok(x),
             Err(err) => {
-                println!("Failed to parse file: {:?} with err {:?}, trying V1 parser", input_file, err);
+                info!(
+                    "Failed to parse file: {:?} with err {:?}, trying V1 parser",
+                    input_file, err
+                );
                 xlsparser::Parser::new().read_xls(input_file)
             }
         }

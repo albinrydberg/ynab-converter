@@ -5,6 +5,8 @@ use html_parser::{Dom, Element, Node};
 use crate::handelsbanken;
 use crate::handelsbanken::table::*;
 
+use log::info;
+
 const HANDELSBANKEN_SHITTY_STRING: &str = " PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"";
 
 const HTML_TABLE_ROW_TAG: &str = "tr";
@@ -72,7 +74,7 @@ fn parse_row(element: Element) -> RawTableRow {
                 None => {}
                 Some(cell) => cells.push(cell),
             },
-            x => println!("Not a cell... Ignoring {:?}", x),
+            x => info!("Not a cell... Ignoring {:?}", x),
         }
     }
     RawTableRow::new(cells)
@@ -107,8 +109,8 @@ fn parse_cell(element: Element) -> Option<String> {
 mod tests {
     use chrono::NaiveDate;
 
-    use crate::handelsbanken::Transaction;
     use crate::handelsbanken::xlsparser;
+    use crate::handelsbanken::Transaction;
 
     #[test]
     fn read_xls_happy() {

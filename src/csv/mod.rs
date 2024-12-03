@@ -1,4 +1,5 @@
 use serde::de::DeserializeOwned;
+use log::info;
 
 pub struct Parser {
     delimiter: u8,
@@ -33,7 +34,7 @@ impl Parser {
             let row: T = match record {
                 Ok(record) => record,
                 Err(e) => {
-                    println!("Skipping record: {:?}", e);
+                    info!("Skipping record: {:?}", e);
                     continue;
                 }
             };

@@ -1,5 +1,6 @@
 use crate::ynab::YnabWriter;
 use clap::{arg, Parser, ValueEnum};
+use log::info;
 
 mod amex;
 mod csv;
@@ -68,14 +69,14 @@ fn convert_csv(
 ) -> anyhow::Result<()> {
     let nordea_parser = nordea::Parser::new();
     if nordea_parser.is_parsable(&input_file) {
-        println!("Nordea file identified");
+        info!("Nordea file identified");
         let nordea_rows = nordea_parser.parse(&input_file)?;
         ynab_writer.write_csv(output_file.clone(), nordea_rows)?
     }
 
     let amex_parser = amex::Parser::new();
     if amex_parser.is_parsable(&input_file) {
-        println!("Amex file identified");
+        info!("Amex file identified");
         let amex_rows = amex_parser.parse(&input_file)?;
         ynab_writer.write_csv(output_file.clone(), amex_rows)?
     }
