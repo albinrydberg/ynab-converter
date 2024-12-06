@@ -13,5 +13,5 @@ serde = { version = "1.0.197", features = ["derive"] }
 chrono = { version = "0.4.37", features = ["serde"] }
 anyhow = "1.0.81"
 html_parser = "0.7.0"
-itertools = "0.12.1"
-calamine = "0.25.0"
+calamine = "0.26.1"
+log = "0.4.21"
