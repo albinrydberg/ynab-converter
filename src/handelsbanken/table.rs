@@ -19,20 +19,20 @@ pub(super) struct Table {
 }
 
 impl Table {
-    pub(super) fn from(rows: Vec<RawTableRow>) -> Self {
+    pub(super) fn from(rows: Vec<RawTableRow>) -> anyhow::Result<Table> {
         if rows.is_empty() {
-            panic!("Can't create a table from empty input: {:?}", rows)
+            anyhow::bail!("Can't create a table from empty input: {:?}", rows);
         }
 
         for row in &rows {
             if row.cells.len() != KNOWN_HANDELSBANKEN_HEADERS.len() {
-                panic!(
+                anyhow::bail!(
                     "Can't create a table with rows of varying breadth: {:?}",
                     rows
                 )
             }
         }
-        Self { rows }
+        Ok(Self { rows })
     }
 
     pub(super) fn convert_to_rows(self) -> Vec<handelsbanken::Transaction> {

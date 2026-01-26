@@ -10,7 +10,7 @@ impl Parser {
     }
 
     pub fn read(&self, input_file: String) -> anyhow::Result<Vec<handelsbanken::Transaction>> {
-        let output = xlsxparser::Parser::new().read_xls(input_file.clone());
+        let output = xlsxparser::Parser::new().read_xlsx(input_file.clone());
 
         match output {
             Ok(x) => Ok(x),

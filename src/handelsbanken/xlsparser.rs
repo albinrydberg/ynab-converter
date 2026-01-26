@@ -27,7 +27,7 @@ impl Parser {
         let rows = traverse_parse(dom.children);
         let rows = remove_residual_table_data(rows);
 
-        let table = Table::from(rows);
+        let table = Table::from(rows)?;
         let output_vec = table.convert_to_rows();
         Ok(output_vec)
     }
