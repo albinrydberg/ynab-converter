@@ -19,11 +19,19 @@ struct Cli {
     force: Option<Bank>,
 
     #[command(subcommand)]
-    api: Option<YnabApi>,
+    command: Option<Command>,
 }
 
 #[derive(Subcommand)]
-enum YnabApi {
+enum Command {
+    Api {
+        #[command(subcommand)]
+        command: ApiCommand
+    },
+}
+
+#[derive(Subcommand)]
+enum ApiCommand {
     Budgets(YnabApiArguments),
 }
 
@@ -31,6 +39,15 @@ enum YnabApi {
 struct YnabApiArguments {
     #[arg(short, long)]
     pat: Option<String>,
+}
+
+impl YnabApiArguments {
+    fn pat(self) -> anyhow::Result<String> {
+        match self.pat {
+            Some(x) => Ok(x),
+            None => std::env::var(YNAB_PAT_VAR).with_context(|| "PAT environment variable not set"),
+        }
+    }
 }
 
 #[derive(ValueEnum, Clone)]
@@ -45,15 +62,9 @@ fn main() -> anyhow::Result<()> {
     dotenvy::dotenv()?;
     let cli = Cli::parse();
 
-    match cli.api {
-        Some(YnabApi::Budgets(args)) => {
-            let pat: String = match args.pat {
-                Some(x) => x,
-                None => {
-                    std::env::var(YNAB_PAT_VAR).with_context(|| "PAT environment variable not set")?
-                }
-            };
-
+    match cli.command {
+        Some(Command::Api { command: ApiCommand::Budgets(args) }) => {
+            let pat = args.pat()?;
             let client = ynab::Client::new(pat)?;
             let response = client.get_budgets()?;
             println!("{}", serde_json::to_string(&response)?);
