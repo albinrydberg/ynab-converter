@@ -13,8 +13,9 @@ serde = { version = "1.0.197", features = ["derive"] }
 chrono = { version = "0.4.37", features = ["serde"] }
 anyhow = "1.0.81"
 html_parser = "0.7.0"
-itertools = "0.12.1"
-reqwest = { version = "0.12.2", features = ["blocking", "json"] }
+reqwest = { version = "0.13.1", features = ["blocking", "json"] }
+dotenvy = "0.15.7"
+serde_json = "1.0.149"
 
 [dev-dependencies]
 serde_json = "1.0.115"

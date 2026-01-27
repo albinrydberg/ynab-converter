@@ -24,7 +24,6 @@ impl Client {
             .send()
             .with_context(|| "Failed to perform get budgets request")?;
 
-        println!("{:?}", response);
         response
             .json::<BudgetSummaryResponse>()
             .with_context(|| "Failed to parse response as json")

@@ -2,3 +2,5 @@
 .idea
 target
 *.go
+.pat
+.env

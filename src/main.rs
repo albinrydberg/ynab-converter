@@ -1,4 +1,6 @@
+use anyhow::Context;
 use clap::{arg, Args, Parser, Subcommand, ValueEnum};
+use dotenvy;
 
 mod handelsbanken;
 mod nordea;
@@ -28,7 +30,7 @@ enum YnabApi {
 #[derive(Args)]
 struct YnabApiArguments {
     #[arg(short, long)]
-    pat: String,
+    pat: Option<String>,
 }
 
 #[derive(ValueEnum, Clone)]
@@ -37,14 +39,24 @@ enum Bank {
     Handelsbanken,
 }
 
+const YNAB_PAT_VAR: &'static str = "YNAB_PAT";
+
 fn main() -> anyhow::Result<()> {
+    dotenvy::dotenv()?;
     let cli = Cli::parse();
 
     match cli.api {
         Some(YnabApi::Budgets(args)) => {
-            let client = ynab::Client::new(args.pat)?;
+            let pat: String = match args.pat {
+                Some(x) => x,
+                None => {
+                    std::env::var(YNAB_PAT_VAR).with_context(|| "PAT environment variable not set")?
+                }
+            };
+
+            let client = ynab::Client::new(pat)?;
             let response = client.get_budgets()?;
-            println!("{:?}", response);
+            println!("{}", serde_json::to_string(&response)?);
             Ok(())
         }
         None => match cli.input_file {
